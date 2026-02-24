@@ -13,7 +13,7 @@ public partial class BookEditViewModel : ObservableObject
     private readonly int? _bookId;
 
     [ObservableProperty] private string _title = string.Empty;
-    [ObservableProperty] private string _isbn = string.Empty;
+    [ObservableProperty] private string _isbnValue = string.Empty;
     [ObservableProperty] private int _publishYear = DateTime.Now.Year;
     [ObservableProperty] private int _quantityInStock;
     [ObservableProperty] private Author? _selectedAuthor;
@@ -28,7 +28,6 @@ public partial class BookEditViewModel : ObservableObject
     {
         _bookId = bookId;
         WindowTitle = "Редактировать книгу";
-        _ = LoadBookAsync();
     }
 
     private async Task LoadBookAsync()
@@ -42,7 +41,7 @@ public partial class BookEditViewModel : ObservableObject
                 .FirstOrDefaultAsync(b => b.Id == _bookId);
             if (book is null) return;
             Title = book.Title;
-            ISBN = book.ISBN;
+            IsbnValue = book.ISBN;
             PublishYear = book.PublishYear;
             QuantityInStock = book.QuantityInStock;
             SelectedAuthor = Authors.FirstOrDefault(a => a.Id == book.AuthorId);
@@ -78,7 +77,7 @@ public partial class BookEditViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(Title))
         { MessageBox.Show("Укажите название книги.", "Валидация", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
-        if (string.IsNullOrWhiteSpace(ISBN))
+        if (string.IsNullOrWhiteSpace(IsbnValue))
         { MessageBox.Show("Укажите ISBN.", "Валидация", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
         if (SelectedAuthor is null)
         { MessageBox.Show("Выберите автора.", "Валидация", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
@@ -97,7 +96,7 @@ public partial class BookEditViewModel : ObservableObject
                 var book = await context.Books.FindAsync(_bookId.Value);
                 if (book is null) return;
                 book.Title = Title;
-                book.ISBN = ISBN;
+                book.ISBN = IsbnValue;
                 book.PublishYear = PublishYear;
                 book.QuantityInStock = QuantityInStock;
                 book.AuthorId = SelectedAuthor.Id;
@@ -108,7 +107,7 @@ public partial class BookEditViewModel : ObservableObject
                 context.Books.Add(new Book
                 {
                     Title = Title,
-                    ISBN = ISBN,
+                    ISBN = IsbnValue,
                     PublishYear = PublishYear,
                     QuantityInStock = QuantityInStock,
                     AuthorId = SelectedAuthor.Id,
