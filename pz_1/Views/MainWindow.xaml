@@ -30,8 +30,8 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Библиотека" Foreground="White" FontSize="22" FontWeight="Bold"
                            VerticalAlignment="Center"/>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
-                    <Button Content="Авторы" Style="{StaticResource SecondaryButton}"
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Авторы" Margin="0,0,8,0" Style="{StaticResource SecondaryButton}"
                             Command="{Binding ManageAuthorsCommand}"/>
                     <Button Content="Жанры" Style="{StaticResource SecondaryButton}"
                             Command="{Binding ManageGenresCommand}"/>
