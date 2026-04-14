@@ -1,0 +1,287 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="NetworkAnalyzer.MainWindow"
+        Title="Анализатор сетевых подключений"
+        Width="1100" Height="720"
+        MinWidth="900" MinHeight="600"
+        Background="#0F1117">
+
+    <Window.Styles>
+        <!-- Базовый текст -->
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="#C9D1D9"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+        </Style>
+        <!-- Метки-заголовки секций -->
+        <Style Selector="TextBlock.section-title">
+            <Setter Property="Foreground" Value="#58A6FF"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="2"/>
+        </Style>
+        <!-- Карточки -->
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="#161B22"/>
+            <Setter Property="BorderBrush" Value="#30363D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="14"/>
+        </Style>
+        <!-- Кнопки -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#238636"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#2EA043"/>
+        </Style>
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="#21262D"/>
+            <Setter Property="Foreground" Value="#C9D1D9"/>
+            <Setter Property="BorderBrush" Value="#30363D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#30363D"/>
+        </Style>
+        <!-- TextBox -->
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="#0D1117"/>
+            <Setter Property="Foreground" Value="#C9D1D9"/>
+            <Setter Property="BorderBrush" Value="#30363D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+            <Setter Property="CaretBrush" Value="#58A6FF"/>
+        </Style>
+        <Style Selector="TextBox:focus">
+            <Setter Property="BorderBrush" Value="#58A6FF"/>
+        </Style>
+        <!-- ListBox -->
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="#0D1117"/>
+            <Setter Property="BorderBrush" Value="#30363D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Foreground" Value="#C9D1D9"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,6"/>
+        </Style>
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1F3A5A"/>
+        </Style>
+        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1C2430"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*" Margin="16">
+
+        <!-- Заголовок -->
+        <Border Grid.Row="0" Margin="0,0,0,14">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <TextBlock Text="◈" FontSize="22" Foreground="#58A6FF" VerticalAlignment="Center"/>
+                <StackPanel>
+                    <TextBlock Text="АНАЛИЗАТОР СЕТЕВЫХ ПОДКЛЮЧЕНИЙ"
+                               FontSize="15" FontWeight="Bold" Foreground="#E6EDF3"
+                               LetterSpacing="1"/>
+                    <TextBlock x:Name="StatusBar" Text="Готов к работе"
+                               FontSize="11" Foreground="#8B949E"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Основной контент -->
+        <Grid Grid.Row="1" ColumnDefinitions="320,*">
+
+            <!-- ЛЕВАЯ КОЛОНКА: интерфейсы -->
+            <Grid Grid.Column="0" RowDefinitions="Auto,*,Auto" Margin="0,0,12,0">
+
+                <StackPanel Grid.Row="0" Margin="0,0,0,8">
+                    <TextBlock Text="СЕТЕВЫЕ ИНТЕРФЕЙСЫ" Classes="section-title" Margin="0,0,0,6"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBox x:Name="FilterBox" Grid.Column="0"
+                                 Watermark="Фильтр по имени..."
+                                 Height="34" FontSize="12"
+                                 TextChanged="FilterBox_TextChanged"/>
+                        <Button Grid.Column="1" Content="↺ Обновить"
+                                Classes="secondary" Margin="8,0,0,0"
+                                Height="34" FontSize="12"
+                                Click="RefreshInterfaces_Click"/>
+                    </Grid>
+                </StackPanel>
+
+                <ListBox Grid.Row="1"
+                         x:Name="InterfaceList"
+                         SelectionChanged="InterfaceList_SelectionChanged"/>
+
+                <!-- Краткая статистика -->
+                <Border Grid.Row="2" Classes="card" Margin="0,10,0,0">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="СТАТИСТИКА" Classes="section-title" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="StatsTotal" Text="Всего: —" FontSize="12"/>
+                        <TextBlock x:Name="StatsUp"    Text="Активных: —" FontSize="12" Foreground="#3FB950"/>
+                        <TextBlock x:Name="StatsDown"  Text="Неактивных: —" FontSize="12" Foreground="#F85149"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ПРАВАЯ КОЛОНКА -->
+            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*">
+
+                <!-- Блок информации об интерфейсе -->
+                <Border Grid.Row="0" Classes="card" Margin="0,0,0,12">
+                    <Grid RowDefinitions="Auto,Auto">
+                        <TextBlock Grid.Row="0" Text="ИНФОРМАЦИЯ ОБ ИНТЕРФЕЙСЕ"
+                                   Classes="section-title" Margin="0,0,0,10"/>
+                        <Grid Grid.Row="1" ColumnDefinitions="*,*,*" x:Name="InterfaceInfoGrid">
+                            <!-- Колонка 1 -->
+                            <StackPanel Grid.Column="0" Spacing="6">
+                                <StackPanel>
+                                    <TextBlock Text="ИМЯ" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="InfoName" Text="—" FontSize="13" Foreground="#E6EDF3"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="IP-АДРЕС" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="InfoIp" Text="—" FontSize="13" Foreground="#79C0FF"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="МАСКА ПОДСЕТИ" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="InfoMask" Text="—" FontSize="13"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <!-- Колонка 2 -->
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <StackPanel>
+                                    <TextBlock Text="MAC-АДРЕС" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="InfoMac" Text="—" FontSize="13" Foreground="#D2A8FF"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="СОСТОЯНИЕ" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="InfoStatus" Text="—" FontSize="13"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="ТИП" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="InfoType" Text="—" FontSize="13"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <!-- Колонка 3 -->
+                            <StackPanel Grid.Column="2" Spacing="6">
+                                <StackPanel>
+                                    <TextBlock Text="СКОРОСТЬ" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="InfoSpeed" Text="—" FontSize="13" Foreground="#FFA657"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="IPv6" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="InfoIpv6" Text="—" FontSize="12" Foreground="#79C0FF"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Блок URL -->
+                <Border Grid.Row="1" Classes="card" Margin="0,0,0,12">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="АНАЛИЗ URL / URI" Classes="section-title"/>
+                        <Grid ColumnDefinitions="*,Auto,Auto">
+                            <TextBox x:Name="UrlInput" Grid.Column="0"
+                                     Watermark="https://example.com/path?q=1#anchor"
+                                     Height="36" FontSize="13"
+                                     KeyDown="UrlInput_KeyDown"/>
+                            <Button Grid.Column="1" Content="Анализировать"
+                                    Classes="primary" Margin="8,0,0,0"
+                                    Height="36" Click="AnalyzeUrl_Click"/>
+                            <Button Grid.Column="2" Content="Очистить историю"
+                                    Classes="secondary" Margin="8,0,0,0"
+                                    Height="36" FontSize="12"
+                                    Click="ClearHistory_Click"/>
+                        </Grid>
+
+                        <!-- Компоненты URL -->
+                        <Border Background="#0D1117" BorderBrush="#30363D"
+                                BorderThickness="1" CornerRadius="6" Padding="12">
+                            <Grid ColumnDefinitions="*,*,*,*,*,*" x:Name="UrlComponentsGrid">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="СХЕМА" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="UriScheme" Text="—" FontSize="13" Foreground="#3FB950"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="ХОСТ" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="UriHost" Text="—" FontSize="13" Foreground="#79C0FF"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="ПОРТ" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="UriPort" Text="—" FontSize="13" Foreground="#FFA657"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="3">
+                                    <TextBlock Text="ПУТЬ" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="UriPath" Text="—" FontSize="13" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="4">
+                                    <TextBlock Text="ПАРАМЕТРЫ" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="UriQuery" Text="—" FontSize="12" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="5">
+                                    <TextBlock Text="ФРАГМЕНТ" FontSize="10" Foreground="#8B949E"/>
+                                    <TextBlock x:Name="UriFragment" Text="—" FontSize="13" Foreground="#D2A8FF"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Область результатов + история -->
+                <Grid Grid.Row="2" ColumnDefinitions="*,220">
+
+                    <!-- Результаты анализа -->
+                    <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
+                        <Grid RowDefinitions="Auto,*">
+                            <StackPanel Grid.Row="0" Orientation="Horizontal"
+                                        Spacing="10" Margin="0,0,0,8">
+                                <TextBlock Text="РЕЗУЛЬТАТЫ" Classes="section-title" VerticalAlignment="Center"/>
+                                <Button Content="Очистить" Classes="secondary"
+                                        FontSize="11" Padding="8,4"
+                                        Click="ClearResults_Click"/>
+                            </StackPanel>
+                            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+                                <TextBox x:Name="ResultsBox"
+                                         IsReadOnly="True"
+                                         AcceptsReturn="True"
+                                         TextWrapping="Wrap"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         FontSize="12"
+                                         Foreground="#C9D1D9"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+
+                    <!-- История проверенных URL -->
+                    <Border Grid.Column="1" Classes="card">
+                        <Grid RowDefinitions="Auto,*">
+                            <TextBlock Grid.Row="0" Text="ИСТОРИЯ URL"
+                                       Classes="section-title" Margin="0,0,0,8"/>
+                            <ListBox Grid.Row="1" x:Name="HistoryList"
+                                     FontSize="11"
+                                     SelectionChanged="HistoryList_SelectionChanged"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
