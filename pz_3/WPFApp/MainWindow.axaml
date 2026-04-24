@@ -1,0 +1,356 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HttpMonitor.MainWindow"
+        Title="HTTP Monitor"
+        Width="1200" Height="800"
+        MinWidth="1000" MinHeight="650"
+        Background="#0F1117">
+
+    <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="#C9D1D9"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style Selector="TextBlock.label">
+            <Setter Property="Foreground" Value="#8B949E"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="1"/>
+        </Style>
+        <Style Selector="TextBlock.section">
+            <Setter Property="Foreground" Value="#58A6FF"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="2"/>
+        </Style>
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="#161B22"/>
+            <Setter Property="BorderBrush" Value="#30363D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="12"/>
+        </Style>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#238636"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="14,7"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#2EA043"/>
+        </Style>
+        <Style Selector="Button.danger">
+            <Setter Property="Background" Value="#8B1A1A"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="14,7"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#B22222"/>
+        </Style>
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="#21262D"/>
+            <Setter Property="Foreground" Value="#C9D1D9"/>
+            <Setter Property="BorderBrush" Value="#30363D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="14,7"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#30363D"/>
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="#0D1117"/>
+            <Setter Property="Foreground" Value="#C9D1D9"/>
+            <Setter Property="BorderBrush" Value="#30363D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="CaretBrush" Value="#58A6FF"/>
+            <Setter Property="Padding" Value="8,6"/>
+        </Style>
+        <Style Selector="TextBox:focus">
+            <Setter Property="BorderBrush" Value="#58A6FF"/>
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="#0D1117"/>
+            <Setter Property="Foreground" Value="#C9D1D9"/>
+            <Setter Property="BorderBrush" Value="#30363D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="8,6"/>
+        </Style>
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="#0D1117"/>
+            <Setter Property="BorderBrush" Value="#30363D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Foreground" Value="#C9D1D9"/>
+            <Setter Property="FontFamily" Value="Consolas, Menlo, monospace"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1F3A5A"/>
+        </Style>
+        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1C2430"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*" Margin="14">
+
+        <!-- Заголовок -->
+        <Border Grid.Row="0" Margin="0,0,0,12">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="◈" FontSize="20" Foreground="#58A6FF" VerticalAlignment="Center"/>
+                    <StackPanel>
+                        <TextBlock Text="HTTP MONITOR" FontSize="14" FontWeight="Bold"
+                                   Foreground="#E6EDF3" LetterSpacing="2"/>
+                        <TextBlock x:Name="StatusBar" Text="Готов к работе"
+                                   FontSize="11" Foreground="#8B949E"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="280,*,280">
+
+            <Grid Grid.Column="0" RowDefinitions="Auto,Auto,Auto,*" Margin="0,0,10,0">
+
+                <Border Grid.Row="0" Classes="card" Margin="0,0,0,10">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="СЕРВЕР" Classes="section"/>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="ПОРТ" Classes="label" Margin="0,0,0,3"/>
+                                <TextBox x:Name="ServerPortBox" Text="8080" Height="32"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Margin="8,0,0,0" Spacing="6">
+                                <Button x:Name="StartServerBtn" Content="▶ Запустить"
+                                        Classes="primary" Height="32"
+                                        Click="StartServer_Click"/>
+                                <Button x:Name="StopServerBtn" Content="■ Остановить"
+                                        Classes="danger" Height="32"
+                                        IsEnabled="False"
+                                        Click="StopServer_Click"/>
+                            </StackPanel>
+                        </Grid>
+                        <Border Background="#0D1117" BorderBrush="#30363D" BorderThickness="1"
+                                CornerRadius="4" Padding="8,6">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Ellipse x:Name="ServerStatusDot" Width="8" Height="8"
+                                         Fill="#F85149" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="ServerStatusText" Text="Остановлен"
+                                           FontSize="12" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="1" Classes="card" Margin="0,0,0,10">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="СТАТИСТИКА" Classes="section" Margin="0,0,0,4"/>
+                        <Grid ColumnDefinitions="*,*">
+                            <StackPanel Grid.Column="0" Spacing="6">
+                                <StackPanel>
+                                    <TextBlock Text="GET запросов" Classes="label"/>
+                                    <TextBlock x:Name="StatGet" Text="0"
+                                               FontSize="20" FontWeight="Bold" Foreground="#3FB950"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="Среднее время" Classes="label"/>
+                                    <TextBlock x:Name="StatAvgTime" Text="0 мс" FontSize="14" Foreground="#FFA657"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <StackPanel>
+                                    <TextBlock Text="POST запросов" Classes="label"/>
+                                    <TextBlock x:Name="StatPost" Text="0"
+                                               FontSize="20" FontWeight="Bold" Foreground="#79C0FF"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="Время работы" Classes="label"/>
+                                    <TextBlock x:Name="StatUptime" Text="—" FontSize="12" Foreground="#8B949E"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="2" Classes="card" Margin="0,0,0,10">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="ФИЛЬТР ЛОГОВ" Classes="section"/>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="МЕТОД" Classes="label" Margin="0,0,0,3"/>
+                            <ComboBox x:Name="FilterMethod" Width="200" HorizontalAlignment="Left">
+                                <ComboBoxItem Content="Все" IsSelected="True"/>
+                                <ComboBoxItem Content="GET"/>
+                                <ComboBoxItem Content="POST"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="СТАТУС ОТВЕТА" Classes="label" Margin="0,0,0,3"/>
+                            <ComboBox x:Name="FilterStatus" Width="200" HorizontalAlignment="Left">
+                                <ComboBoxItem Content="Все" IsSelected="True"/>
+                                <ComboBoxItem Content="2xx (успех)"/>
+                                <ComboBoxItem Content="4xx (ошибка клиента)"/>
+                                <ComboBoxItem Content="5xx (ошибка сервера)"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Button Content="Применить" Classes="secondary" Height="30" FontSize="11"
+                                    Click="ApplyFilter_Click"/>
+                            <Button Content="Сбросить" Classes="secondary" Height="30" FontSize="11"
+                                    Click="ResetFilter_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="3" Classes="card">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="СОХРАНЕНИЕ ЛОГОВ" Classes="section"/>
+                        <TextBlock Text="ПУТЬ К ФАЙЛУ" Classes="label" Margin="0,0,0,3"/>
+                        <TextBox x:Name="LogFilePathBox" Text="logs.txt" Height="32"/>
+                        <Button Content="Сохранить в файл" Classes="secondary" Height="30" FontSize="11"
+                                Click="SaveLogs_Click"/>
+                        <TextBlock x:Name="SaveStatusText" Text="" FontSize="11" Foreground="#3FB950"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Column="1" RowDefinitions="*,Auto,160" Margin="0,0,10,0">
+
+                <Border Grid.Row="0" Classes="card" Margin="0,0,0,10">
+                    <Grid RowDefinitions="Auto,*">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,8">
+                            <TextBlock Text="ЛОГИ ЗАПРОСОВ" Classes="section" VerticalAlignment="Center"/>
+                            <Button Content="Очистить" Classes="secondary" FontSize="11"
+                                    Padding="8,4" Click="ClearLogs_Click"/>
+                        </StackPanel>
+                        <ListBox Grid.Row="1" x:Name="LogsList"
+                                 SelectionChanged="LogsList_SelectionChanged"/>
+                    </Grid>
+                </Border>
+
+                <!-- Детали выбранного запроса -->
+                <Border Grid.Row="1" Classes="card" Margin="0,0,0,10">
+                    <Grid RowDefinitions="Auto,Auto">
+                        <TextBlock Grid.Row="0" Text="ДЕТАЛИ ЗАПРОСА" Classes="section" Margin="0,0,0,8"/>
+                        <TextBox Grid.Row="1" x:Name="RequestDetailsBox"
+                                 IsReadOnly="True" AcceptsReturn="True"
+                                 Height="80" FontSize="11"
+                                 TextWrapping="Wrap"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="2" Classes="card">
+                    <Grid RowDefinitions="Auto,*">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,6">
+                            <TextBlock Text="НАГРУЗКА" Classes="section" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="ChartMode" Height="28" FontSize="11" Width="130">
+                                <ComboBoxItem Content="Минутный" IsSelected="True"/>
+                                <ComboBoxItem Content="Часовой"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <Canvas Grid.Row="1" x:Name="LoadChart" Background="#0D1117"
+                                ClipToBounds="True"/>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Column="2" RowDefinitions="Auto,*">
+
+                <Border Grid.Row="0" Classes="card">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="HTTP КЛИЕНТ" Classes="section"/>
+
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="URL" Classes="label"/>
+                            <TextBox x:Name="ClientUrlBox"
+                                     Text="https://jsonplaceholder.typicode.com/posts"
+                                     Height="32"/>
+                        </StackPanel>
+
+                        <Grid ColumnDefinitions="Auto,*">
+                            <StackPanel Grid.Column="0" Spacing="3">
+                                <TextBlock Text="МЕТОД" Classes="label"/>
+                                <ComboBox x:Name="ClientMethod" Width="90" Height="32">
+                                    <ComboBoxItem Content="GET" IsSelected="True"/>
+                                    <ComboBoxItem Content="POST"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="3" Margin="8,0,0,0"
+                                        IsVisible="False" x:Name="PostIdPanel">
+                                <TextBlock Text="ID (для GET /posts/{id})" Classes="label"/>
+                                <TextBox x:Name="PostIdBox" Height="32" Watermark="1"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="ТЕЛО ЗАПРОСА (JSON)" Classes="label"/>
+                            <TextBox x:Name="ClientBodyBox"
+                                     AcceptsReturn="True"
+                                     Height="100"
+                                     Text="{}{&quot;message&quot;: &quot;Hello&quot;}"
+                                     TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <Button Content="→ Отправить запрос" Classes="primary"
+                                HorizontalAlignment="Stretch"
+                                Click="SendRequest_Click"/>
+
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="ОТВЕТ" Classes="label"/>
+                            <Border Background="#0D1117" BorderBrush="#30363D"
+                                    BorderThickness="1" CornerRadius="4" Padding="6">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="Статус:" Classes="label" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="ResponseStatusText" Text="—"
+                                               FontSize="12" Foreground="#FFA657" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Время:" Classes="label" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="ResponseTimeText" Text="—"
+                                               FontSize="12" Foreground="#FFA657" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="1" Classes="card" Margin="0,10,0,0">
+                    <Grid RowDefinitions="Auto,*">
+                        <TextBlock Grid.Row="0" Text="ТЕЛО ОТВЕТА" Classes="section" Margin="0,0,0,6"/>
+                        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+                            <TextBox x:Name="ResponseBodyBox"
+                                     IsReadOnly="True"
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     FontSize="11"/>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
